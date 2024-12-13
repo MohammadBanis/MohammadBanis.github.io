@@ -110,11 +110,20 @@
             display: flex;
             gap: 20px;
         }
+
+        /* Footer text */
+        .footer-text {
+            position: fixed;
+            bottom: 10px;
+            right: 10px;
+            font-size: 18px;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
     </style>
 </head>
 <body>
     <h1>Tic Tac Toe</h1>
-    <h1>Made by Mohammad Baniasadi</h1>
     <div id="mode-select">
         <button onclick="startGame('pvp')">Player vs Player</button>
         <button onclick="startGame('pve')">Player vs Bot</button>
@@ -122,6 +131,9 @@
     <div id="board" style="display: none;"></div>
     <div id="message"></div>
     <button id="reset" style="display: none;">Restart Game</button>
+
+    <!-- Footer Text -->
+    <div class="footer-text">Made by Mohammad Baniasadi</div>
 
     <script>
         const board = document.getElementById("board");
@@ -188,6 +200,7 @@
             if (mode === "pvp") {
                 currentPlayer = currentPlayer === "X" ? "O" : "X";
                 message.textContent = `Player ${currentPlayer}'s turn`;
+                
             } else if (mode === "pve") {
                 currentPlayer = "O";
                 botMove();
