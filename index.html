@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tic Tac Toe - made by MohammadBanis</title>
+    <title>Tic Tac Toe - Made by MohammadBanis</title>
     <style>
+        /* Same styling as before for modern design */
         body {
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #6a11cb, #2575fc);
@@ -194,13 +195,9 @@
 
         function botMove() {
             setTimeout(() => {
-                if (!gameActive) return;
-
-                const emptyCells = cells.map((val, idx) => (val === null ? idx : null)).filter(idx => idx !== null);
-                const randomIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-
-                cells[randomIndex] = currentPlayer;
-                const cellElement = board.children[randomIndex];
+                const bestMove = findBestMove();
+                cells[bestMove] = currentPlayer;
+                const cellElement = board.children[bestMove];
                 cellElement.textContent = currentPlayer;
                 cellElement.classList.add(currentPlayer, "taken");
 
@@ -221,10 +218,60 @@
             }, 500);
         }
 
-        function checkWin() {
-            return winningCombinations.some(combination => 
-                combination.every(index => cells[index] === currentPlayer)
+        function findBestMove() {
+            let bestScore = -Infinity;
+            let move;
+
+            for (let i = 0; i < cells.length; i++) {
+                if (cells[i] === null) {
+                    cells[i] = "O"; // Bot's move
+                    let score = minimax(cells, 0, false);
+                    cells[i] = null; // Undo the move
+                    if (score > bestScore) {
+                        bestScore = score;
+                        move = i;
+                    }
+                }
+            }
+            return move;
+        }
+
+        function minimax(newCells, depth, isMaximizing) {
+            if (checkWinCondition(newCells, "O")) return 10 - depth;
+            if (checkWinCondition(newCells, "X")) return depth - 10;
+            if (newCells.every(cell => cell !== null)) return 0;
+
+            if (isMaximizing) {
+                let bestScore = -Infinity;
+                for (let i = 0; i < newCells.length; i++) {
+                    if (newCells[i] === null) {
+                        newCells[i] = "O";
+                        bestScore = Math.max(bestScore, minimax(newCells, depth + 1, false));
+                        newCells[i] = null;
+                    }
+                }
+                return bestScore;
+            } else {
+                let bestScore = Infinity;
+                for (let i = 0; i < newCells.length; i++) {
+                    if (newCells[i] === null) {
+                        newCells[i] = "X";
+                        bestScore = Math.min(bestScore, minimax(newCells, depth + 1, true));
+                        newCells[i] = null;
+                    }
+                }
+                return bestScore;
+            }
+        }
+
+        function checkWinCondition(board, player) {
+            return winningCombinations.some(combination =>
+                combination.every(index => board[index] === player)
             );
+        }
+
+        function checkWin() {
+            return checkWinCondition(cells, currentPlayer);
         }
 
         function resetGame() {
@@ -242,8 +289,7 @@
             message.textContent = "";
         });
 
-        // Initialize the game
-        resetGame();
+        createBoard();
     </script>
 </body>
 </html>
